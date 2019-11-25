@@ -21,7 +21,7 @@ export class UserController {
                 user
             });
         } catch (error) {
-            console.log('err',error.details);
+            res.status(HttpStatus.OK).json(error.details);
         }
         
     }

@@ -32,12 +32,13 @@ module.exports = Joi.object({
         .required(),
 
     address: Joi.array()
+        .items(Joi.string().min(3)
+        .max(30))
         .required(),
 
-    phone: Joi.string()
-        .alphanum()
+    phone: Joi.number()
         .min(3)
-        .max(30)
+        //.max(4)
         .required(),
 
     email: Joi.string()
