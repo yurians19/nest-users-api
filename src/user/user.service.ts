@@ -18,9 +18,13 @@ export class UserService {
     }
     
     // Get a single User
-    async getUser(userID: string): Promise<User> {
-        const user = await this.userModel.findById(userID); 
-        return user;
+    async getUser(value: string,field: string): Promise<User> {
+        let query = {};
+        const _field = field == undefined ? "_id" : field;
+        query[_field] = value;
+        console.log(query);
+        const user = await this.userModel.findOne(query); 
+        return user
     }
 
     // Post a single user
