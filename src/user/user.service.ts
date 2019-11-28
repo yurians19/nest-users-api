@@ -22,7 +22,6 @@ export class UserService {
         let query = {};
         const _field = field == undefined ? "_id" : field;
         query[_field] = value;
-        console.log(query);
         const user = await this.userModel.findOne(query); 
         return user
     }
