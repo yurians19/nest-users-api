@@ -3,6 +3,8 @@ import { UserService } from "./user.service";
 import { CreateUserDTO } from "./dto/user.dto";
 const users = require('./validators/users');
 const usersUpdate = require('./validators/usersUpdate');
+const Joi = require('@hapi/joi');
+const schema = Joi.string().alphanum();
 
 @Controller('users')
 export class UserController {
@@ -37,7 +39,9 @@ export class UserController {
     @Get('/:value/:field?')
     async getUser(@Res() res, @Param('value') value, @Param('field') field) {
         try {
-            const user = await this.userService.getUser(value,field);
+            const _value = await schema.validateAsync(value);
+            const _field = await schema.validateAsync(field);
+            const user = await this.userService.getUser(_value,_field);
             if (!user) throw new NotFoundException('User does not exist!');
             res.status(HttpStatus.OK).json(user);
         } catch (error) {
@@ -49,20 +53,31 @@ export class UserController {
     // Delete user: /delete?userID=5c9d45e705ea4843c8d0e8f7
     @Delete('/')
     async deleteUser(@Res() res, @Query('userID') userID) {
-        const userDeleted = await this.userService.deleteUser(userID);
-        if (!userDeleted) throw new NotFoundException('User does not exist!');
-        return res.status(HttpStatus.OK).json({
-            message: 'User Deleted Successfully',
-            userDeleted
-        });
+        try {
+            const id = await schema.validateAsync(userID);
+            const userDeleted = await this.userService.deleteUser(id);
+            if (!userDeleted) throw new NotFoundException('User does not exist!');
+            return res.status(HttpStatus.OK).json({
+                message: 'User Deleted Successfully',
+                userDeleted
+            });
+        } catch (error) {
+            if (error.status == 404)
+                res.status(404).json(error.message);
+            else
+                res.status(409).json(error.details);
+        }
+        
     }
 
     // Update user: /update?userID=5c9d45e705ea4843c8d0e8f7
     @Put('/')
     async updateUser(@Res() res, @Body() CreateUserDTO:CreateUserDTO, @Query('userID') userID) {
+        console.log(userID);
         try {
+            const id = await schema.validateAsync(userID);
             const value = await usersUpdate.validateAsync(CreateUserDTO);
-            const updatedUser = await this.userService.updateUser(userID, value);
+            const updatedUser = await this.userService.updateUser(id, value);
             if (!updatedUser) throw new NotFoundException('User does not exist!');
             return res.status(HttpStatus.OK).json({
             message: 'User Updated Successfully',
