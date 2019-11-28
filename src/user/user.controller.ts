@@ -8,7 +8,7 @@ Joi.objectId = require('joi-objectid')(Joi)
 const schema = Joi.string().alphanum();
 const objectId = Joi.objectId().required()
 
-
+// "postinstall": "npm run tsc",
 @Controller('users')
 export class UserController {
 
@@ -47,7 +47,6 @@ export class UserController {
                 _value = await objectId.validateAsync(value);
             }else {
                 if (field == '_id') {
-                    console.log(field,value);
                     _value = await objectId.validateAsync(value);
                     _field = await schema.validateAsync(field);
                 } else {
