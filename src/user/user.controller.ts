@@ -2,7 +2,7 @@ import { Controller, Post, Res, HttpStatus, Body, Get, Param, NotFoundException,
 import { UserService } from "./user.service";
 import { CreateUserDTO } from "./dto/user.dto";
 const users = require('./validators/users');
-
+const usersUpdate = require('./validators/usersUpdate');
 
 @Controller('users')
 export class UserController {
@@ -21,7 +21,7 @@ export class UserController {
                 user
             });
         } catch (error) {
-            res.status(HttpStatus.OK).json(error.details);
+            res.status(409).json(error.details);
         }
     }
 
@@ -60,12 +60,18 @@ export class UserController {
     // Update user: /update?userID=5c9d45e705ea4843c8d0e8f7
     @Put('/')
     async updateUser(@Res() res, @Body() CreateUserDTO:CreateUserDTO, @Query('userID') userID) {
-        const updatedUser = await this.userService.updateUser(userID, CreateUserDTO);
-        if (!updatedUser) throw new NotFoundException('User does not exist!');
-        return res.status(HttpStatus.OK).json({
+        try {
+            const value = await usersUpdate.validateAsync(CreateUserDTO);
+            const updatedUser = await this.userService.updateUser(userID, value);
+            if (!updatedUser) throw new NotFoundException('User does not exist!');
+            return res.status(HttpStatus.OK).json({
             message: 'User Updated Successfully',
             updatedUser 
         });
+        } catch (error) {
+            res.status(409).json(error.details);
+        }
+        
     }
 
 }
