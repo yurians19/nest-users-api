@@ -25,7 +25,7 @@
     "@nestjs/common": "^6.0.0",
     "@nestjs/core": "^6.0.0",
     "@nestjs/mongoose": "^6.0.0",
-    "@nestjs/platform-express": "^6.0.0",
+    "@nestjs/platform-express": "^6.11.11",
     "joi-objectid": "^3.0.1",
     "mongoose": "^5.4.20",
     "reflect-metadata": "^0.1.12",
